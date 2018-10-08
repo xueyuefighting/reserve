@@ -11,24 +11,34 @@
 <body class="bodycss">
 <script src="/js/jquery-3.3.1.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
-<!--<header>-->
-<!--<div>-->
-<!--<iframe src="../page/header" width="100%" scrolling="no" height="70px"></iframe>-->
-<!--</div>-->
-<!--</header>-->
+<script src="/js/sys.js"></script>
 <script>
 </script>
-<table class="table table-hover">
-    <thead>
-    <tr><th>编号</th><th>姓名</th><th>电话</th></tr>
-    </thead>
-    <tbody>
-    <tr th:each="user:${users}">
-        <td th:text="${user.id}"></td>
-        <td th:text="${user.name}"></td>
-        <td th:text="${user.tel}"></td>
-    </tr>
-    </tbody>
-</table>
+    <table class="table table-hover">
+        <thead>
+        <tr><th>型号</th><th>石材日期</th><th>总量</th><th>剩余</th><th>卖出</th><th>0.6米单价（元）</th><th>1.2米单价（元）</th><th>1.8米单价（元）</th><th>2.4米单价（元）</th></tr>
+        </thead>
+        <tbody>
+        <tr th:if="${page.hasContent()}" th:each="order:${page.getContent()}">
+            <td th:text="${order.model}"></td>
+            <td th:text="${order.stoneDate}"></td>
+            <td th:text="${order.totalCount}"></td>
+            <td th:text="${order.currentCount}"></td>
+            <td th:text="${order.sellCount}"></td>
+            <td th:if="${order.ios!=null}" th:each="st:${order.ios}" th:text="${st.price}"></td>
+            <!--<td th:text="${order.totalCount}"></td>-->
+            <!--<td th:text="${order.totalCount}"></td>-->
+            <!--<td th:text="${order.totalCount}"></td>-->
+            <!--<td th:text="${order.totalCount}"></td>-->
+        </tr>
+        </tbody>
+    </table>
+    <div>
+        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page=0\')'">[首页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:if="${page.hasPrevious()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()-1}+'\')'">[上页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:if="${page.hasNext()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()+1}+'\')'">[下页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.totalPages-1}+'\')'">[末页]</a>
+        当前第&nbsp;<em th:text="${page.getNumber()+1}"></em>&nbsp;&nbsp;页&nbsp;&nbsp;共&nbsp;<em th:text="${page.totalPages}"></em>页
+    </div>
 </body>
 </html>

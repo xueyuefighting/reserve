@@ -10,7 +10,8 @@ import java.util.List;
 
 @Repository
 public interface InOrderStandardRepository extends BaseRepository<InOrderStandardDO, Long> {
-    List<InOrderStandardDO> findByInOrderIdAndStatusOrderByUpdatedAtAsc(long inOrderId, int status);
+//    List<InOrderStandardDO> findByInOrderIdAndStatusOrderByUpdatedAtAsc(long inOrderId, int status);
+    List<InOrderStandardDO> findByInOrderIdInAndStatusOrderByUpdatedAtAsc(List<Long> inOrderIds, int status);
     @Modifying
     @Query("update InOrderStandardDO set  status = ?2 where id in ?1")
     int updateStatus(List<Long> ids, int status);

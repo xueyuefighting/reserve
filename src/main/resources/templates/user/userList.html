@@ -24,7 +24,7 @@
         <tr><th>编号</th><th>姓名</th><th>电话</th></tr>
         </thead>
         <tbody>
-            <tr th:each="user:${page.getContent()}">
+            <tr th:if="${page.hasContent()}" th:each="user:${page.getContent()}">
                 <td th:text="${user.id}"></td>
                 <td th:text="${user.name}"></td>
                 <td th:text="${user.tel}"></td>

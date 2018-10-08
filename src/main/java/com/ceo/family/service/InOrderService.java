@@ -15,10 +15,7 @@ import com.ceo.family.utils.BeanCopy;
 import com.ceo.family.utils.DateUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -30,9 +27,9 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 /**
@@ -92,13 +89,16 @@ public class InOrderService implements IInOrderService{
         if(id<=0){throw new IllegalArgumentException(ContentConstant.PARAM_IS_NULL);}
         InOrderDO inOrderDO = inOrderRepository.findById(id).orElse(new InOrderDO());
         List<InOrderStandardDO> ats =
-                inOrderStandardRepository.findByInOrderIdAndStatusOrderByUpdatedAtAsc(id, Status.NORMAL.getValue());
+                inOrderStandardRepository.findByInOrderIdInAndStatusOrderByUpdatedAtAsc(Arrays.asList(id), Status.NORMAL.getValue());
         InOrderDTO inOrderDTO = getInOrderDTO(inOrderDO, ats);
         return inOrderDTO;
     }
 
     private InOrderDTO getInOrderDTO(InOrderDO inOrderDO, List<InOrderStandardDO> ats) {
         InOrderDTO inOrderDTO = transferToDTO(inOrderDO);
+        inOrderDTO.setTotalCount(inOrderDTO.getTotalCount()/10);
+        inOrderDTO.setCurrentCount(inOrderDTO.getCurrentCount()/10);
+        inOrderDTO.setSellCount(inOrderDTO.getSellCount()/10);
         List<InOrderStandardDTO> ios = CollectionUtils.isEmpty(inOrderDTO.getIos()) ? new ArrayList<>() : inOrderDTO.getIos();
         for(InOrderStandardDO sdo : ats){
             ios.add(transferToDTO(sdo));
@@ -107,10 +107,23 @@ public class InOrderService implements IInOrderService{
     }
 
     @Override
-    public Page<InOrderDO> findByParam(InOrderParam param) {
+    public Page<InOrderDTO> findByParam(InOrderParam param) {
         Pageable pageable = PageRequest.of(param.getPage(), size, Sort.Direction.DESC, "updatedAt");
         Page<InOrderDO> all = inOrderRepository.findAll(listWhere(param), pageable);
-        return all;
+        List<InOrderDO> content = all.getContent();
+        List<Long> ids = content.stream().map(InOrderDO::getId).collect(Collectors.toList());
+
+        List<InOrderStandardDO> ss =
+                inOrderStandardRepository.findByInOrderIdInAndStatusOrderByUpdatedAtAsc(ids, Status.NORMAL.getValue());
+
+        final Map<Long, List<InOrderStandardDO>> collect =
+                ss.stream().collect(Collectors.groupingBy(InOrderStandardDO::getInOrderId));
+        //转交换类
+        List<InOrderDTO> orderDTOS = content.stream().map(x -> transferToDTO(x)).collect(Collectors.toList());
+        //填充
+        orderDTOS.forEach(x->x.setIos(transferToDTOs(collect.get(x.getId()))));
+
+        return new PageImpl<>(orderDTOS, pageable, all.getTotalElements());
     }
 
     @Override
@@ -181,6 +194,11 @@ public class InOrderService implements IInOrderService{
         BeanCopy.copyProperties(dto, dO);
         dO.setStatus(Objects.isNull(dto.getStatus())? Status.NORMAL.getValue() : dto.getStatus().getValue());
         return dO;
+    }
+
+    private static List<InOrderStandardDTO> transferToDTOs(List<InOrderStandardDO> dss){
+        if(CollectionUtils.isEmpty(dss)) return new ArrayList<>();
+        return dss.stream().map(x->transferToDTO(x)).collect(Collectors.toList());
     }
     private static InOrderStandardDTO transferToDTO(InOrderStandardDO ds){
         if(ds==null) return new InOrderStandardDTO();
