@@ -1,0 +1,135 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>新建入库单</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="bootstrap-responsive.min.css">
+    <link rel="stylesheet" type="text/css" href="jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="jquery-ui-timepicker-addon.css">
+</head>
+<body>
+<script src="jquery-3.3.1.min.js"></script>
+<script src="bootstrap.min.js"></script>
+<script src="constant.js"></script>
+<script src="jquery-ui.js"></script>
+<script src="jquery-ui-timepicker-addon.js"></script>
+<script>
+    $(document).ready(function () {
+        $( "#datepicker" ).datepicker({
+            inline: true,
+            dateFormat: "yy-mm-dd"
+        });
+    });
+
+    function sendForm(){
+        if(!$("#model").val()){
+            alert("请填写型号");
+            $("#model").focus();
+            return false;
+        }
+        if(!$("#count").val()){
+            alert("请填写数量");
+            $("#count").focus();
+            return false;
+        }
+        if(!$("#datepicker").val()){
+            alert("请填写板材日期");
+            $("#datepicker").focus();
+            return false;
+        }
+
+        var os = [];
+        var o = {};
+        var flag = true;
+        $(".stand").find("input.st").each(function (i,v) {
+            var thisName = $(v).attr("name");
+            var stand = $(v).val();
+            var price = $("input[name="+thisName+"_price]").val();
+            if(!price){
+                alert("请输入"+stand+"规格的单价!");
+                flag = false;
+                $("input["+thisName+"_price]").focus();
+                return false;
+            }
+            o["standard"] = stand;
+            o["price"] = price
+            os[i]=o;
+        });
+
+        if(!flag){
+            return;
+        }
+
+        var param = {
+            "model":$("#model").val(),
+            "totalCount":$("#count").val(),
+            "stoneDate":$("#datepicker").val(),
+            "ios":os};
+        $.ajax({
+            contentType:"application/json; charset=utf-8",
+            data: JSON.stringify(param),
+            url:HttpParam.http_prefix+"/in/create",
+            type:"POST",
+            cache:false,
+            success:function(){
+                alert("保存成功");
+            },error:function(){
+                alert("请求出错，请刷新页面尝试");
+            }
+        })
+    }
+</script>
+<table  class="table">
+    <tr>
+        <td>型号：</td>
+        <td><input type="text" class="form-control" id="model" placeholder="请输入型号"></td>
+    </tr>
+    <tr>
+        <td>数量：</td>
+        <td><input type="number" class="form-control" id="count" placeholder="请输入数量"></td>
+    </tr>
+    <tr>
+        <td>石材日期：</td>
+        <td>
+            <!--<input type="number" class="form-control" id="tel" placeholder="请输入电话">-->
+            <input style="cursor: pointer;" type="text" placeholder="点击选择日期" id="datepicker">
+        </td>
+    </tr>
+    <tr>
+        <td>定价：</td>
+        <td>
+            <table class="stand">
+                <tr>
+                    <td>规格（米）</td>
+                    <td>单价（元）</td>
+                </tr>
+                <tr>
+                    <td><input class="st" name="s6" readonly="true" value="0.6"/></td>
+                    <td><input name="s6_price" type="number" value=""/></td>
+                </tr>
+                <tr>
+                    <td><input class="st" name="s12" readonly="true" value="1.2"/></td>
+                    <td><input name="s12_price" type="number" value=""/></td>
+                </tr>
+                <tr>
+                    <td><input class="st" name="s18" readonly="true" value="1.8"/></td>
+                    <td><input name="s18_price" type="number" value=""/></td>
+                </tr>
+                <tr>
+                    <td><input class="st" name="s24" readonly="true" value="2.4"/></td>
+                    <td><input name="s24_price" type="number" value=""/></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div class="controls">
+                <button type="button" class="btn" onclick="sendForm();">保存</button>
+            </div>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

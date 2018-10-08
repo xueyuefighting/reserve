@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>新建用户</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css">
+</head>
+<body>
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/constant.js"></script>
+<script>
+    function sendForm(){
+        if(!$("#name").val()){
+            alert("请输入名称");
+            return false;
+        }
+        if(!$("#tel").val()){
+            alert("请输入电话");
+            return false;
+        }
+        var param = {
+            "name":$("#name").val(),
+            "tel":$("#tel").val()};
+        $.ajax({
+            contentType:"application/json; charset=utf-8",
+            data: JSON.stringify(param),
+            url:HttpParam.http_prefix+"/user",
+            type:"POST",
+            cache:false,
+            success:function(){
+                alert("保存成功");
+            },error:function(){
+                alert("请求出错，请刷新页面尝试");
+            }
+        })
+    }
+</script>
+    <table  class="table">
+        <tr>
+            <td>名称：</td>
+            <td><input type="text" class="form-control" id="name" placeholder="请输入名称"></td>
+        </tr>
+        <tr>
+            <td>电话：</td>
+            <td><input type="number" class="form-control" id="tel" placeholder="请输入电话"></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="controls">
+                    <button type="button" class="btn" onclick="sendForm();">保存</button>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+</body>
+</html>

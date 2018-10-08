@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/sys.css">
+</head>
+<body class="bodycss">
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script src="/js/sys.js"></script>
+<!--<header>-->
+    <!--<div>-->
+        <!--<iframe src="../page/header" width="100%" scrolling="no" height="70px"></iframe>-->
+    <!--</div>-->
+<!--</header>-->
+<script>
+</script>
+    <table class="table table-hover">
+        <thead>
+        <tr><th>编号</th><th>姓名</th><th>电话</th></tr>
+        </thead>
+        <tbody>
+            <tr th:each="user:${page.getContent()}">
+                <td th:text="${user.id}"></td>
+                <td th:text="${user.name}"></td>
+                <td th:text="${user.tel}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page=0\')'">[首页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:if="${page.hasPrevious()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()-1}+'\')'">[上页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:if="${page.hasNext()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()+1}+'\')'">[下页]</a>&nbsp;&nbsp;
+        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.totalPages-1}+'\')'">[末页]</a>
+        当前第&nbsp;<em th:text="${page.getNumber()+1}"></em>&nbsp;&nbsp;页&nbsp;&nbsp;共&nbsp;<em th:text="${page.totalPages}"></em>页
+    </div>
+</body>
+</html>

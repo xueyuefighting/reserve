@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>用户列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css">
+    <link rel="stylesheet" type="text/css" href="/css/sys.css">
+</head>
+<body class="bodycss">
+<script src="/js/jquery-3.3.1.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<!--<header>-->
+<!--<div>-->
+<!--<iframe src="../page/header" width="100%" scrolling="no" height="70px"></iframe>-->
+<!--</div>-->
+<!--</header>-->
+<script>
+</script>
+<table class="table table-hover">
+    <thead>
+    <tr><th>编号</th><th>姓名</th><th>电话</th></tr>
+    </thead>
+    <tbody>
+    <tr th:each="user:${users}">
+        <td th:text="${user.id}"></td>
+        <td th:text="${user.name}"></td>
+        <td th:text="${user.tel}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
