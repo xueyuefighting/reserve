@@ -27,6 +27,7 @@ public class InOrderController {
     @PostMapping(value = "")
     @ResponseStatus(value= HttpStatus.CREATED)
     public String saveOrUpdate(@RequestBody InOrderDTO dto, Model model){
+        dto.setStoneDate(dto.getStoneDate()/1000);
         dto = inOrderService.saveOrUpdate(dto);
         return "user/userNew";
     }

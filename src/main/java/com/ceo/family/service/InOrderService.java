@@ -60,6 +60,11 @@ public class InOrderService implements IInOrderService{
         }
 
         transferToDO(inOrderDTO, inOrderDO);
+        long tc = inOrderDO.getTotalCount()*10;
+        inOrderDO.setTotalCount(tc);
+        inOrderDO.setCurrentCount(tc);
+        inOrderDO.setSellCount(0);
+        InOrderDO inOrderDO1 = inOrderRepository.save(inOrderDO);
 
         List<InOrderStandardDTO> ios = inOrderDTO.getIos();
         List<InOrderStandardDO> isa = new ArrayList<>();
@@ -73,12 +78,10 @@ public class InOrderService implements IInOrderService{
                 is.setUpdatedAt(DateUtils.getCurrentSeconds());
             }
             transferToDO(is, i);
+            i.setInOrderId(inOrderDO1.getId());
             isa.add(i);
         }
-        inOrderDO.setTotalCount(inOrderDO.getTotalCount()*10);
-        inOrderDO.setCurrentCount(inOrderDO.getTotalCount()*10);
-        inOrderDO.setSellCount(0);
-        InOrderDO inOrderDO1 = inOrderRepository.save(inOrderDO);
+
         List<InOrderStandardDO> dos = inOrderStandardRepository.saveAll(isa);
         InOrderDTO dto = getInOrderDTO(inOrderDO1, dos);
         return dto;
@@ -162,7 +165,7 @@ public class InOrderService implements IInOrderService{
     private static InOrderDO transferToDO(InOrderDTO dto, InOrderDO dO){
         if(dto==null || dO==null) return new InOrderDO();
         BeanCopy.copyProperties(dto, dO);
-        dO.setStatus(dto.getStatus().getValue());
+        dO.setStatus(Objects.isNull(dto.getStatus())? Status.NORMAL.getValue() : dto.getStatus().getValue());
         return dO;
     }
     private static InOrderDTO transferToDTO(InOrderDO ds){
@@ -176,7 +179,7 @@ public class InOrderService implements IInOrderService{
     private static InOrderStandardDO transferToDO(InOrderStandardDTO dto, InOrderStandardDO dO){
         if(dto==null || dO==null) return new InOrderStandardDO();
         BeanCopy.copyProperties(dto, dO);
-        dO.setStatus(dto.getStatus().getValue());
+        dO.setStatus(Objects.isNull(dto.getStatus())? Status.NORMAL.getValue() : dto.getStatus().getValue());
         return dO;
     }
     private static InOrderStandardDTO transferToDTO(InOrderStandardDO ds){

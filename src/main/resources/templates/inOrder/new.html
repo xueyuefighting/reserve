@@ -40,9 +40,10 @@
         }
 
         var os = [];
-        var o = {};
+        var o;
         var flag = true;
         $(".stand").find("input.st").each(function (i,v) {
+            o = {};
             var thisName = $(v).attr("name");
             var stand = $(v).val();
             var price = $("input[name="+thisName+"_price]").val();
@@ -61,15 +62,17 @@
             return;
         }
 
+        var currentDateLong = new Date($("#datepicker").val()+" 00:00:00".replace(new RegExp("-","gm"),"/")).getTime();     //当前时间转换成long型
+
         var param = {
             "model":$("#model").val(),
-            "totalCount":$("#count").val(),
-            "stoneDate":$("#datepicker").val(),
+            "totalCount": $("#count").val(),
+            "stoneDate": currentDateLong,
             "ios":os};
         $.ajax({
             contentType:"application/json; charset=utf-8",
             data: JSON.stringify(param),
-            url:HttpParam.http_prefix+"/in/create",
+            url:HttpParam.http_prefix+"/in",
             type:"POST",
             cache:false,
             success:function(){
