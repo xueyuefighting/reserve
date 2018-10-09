@@ -10,6 +10,7 @@ import com.ceo.family.dao.dtos.InOrderParam;
 import com.ceo.family.dao.dtos.InOrderStandardDTO;
 import com.ceo.family.dao.repository.InOrderRepository;
 import com.ceo.family.dao.repository.InOrderStandardRepository;
+import com.ceo.family.exception.BadRequestException;
 import com.ceo.family.service.interf.IInOrderService;
 import com.ceo.family.utils.BeanCopy;
 import com.ceo.family.utils.DateUtils;
@@ -46,22 +47,31 @@ public class InOrderService implements IInOrderService{
     private static final int size = 20;
     @Override
     @Transactional
-    public InOrderDTO saveOrUpdate(InOrderDTO inOrderDTO) {
-        if(Objects.isNull(inOrderDTO)){throw new IllegalArgumentException(ContentConstant.PARAM_IS_NULL);}
-        InOrderDO inOrderDO = new InOrderDO();
+    public InOrderDTO saveOrUpdate(InOrderDTO inOrderDTO) throws BadRequestException {
+        if(Objects.isNull(inOrderDTO)){throw new BadRequestException(ContentConstant.PARAM_IS_NULL);}
+        InOrderDO inOrderDO = inOrderRepository.findById(inOrderDTO.getId()).orElse(new InOrderDO());
+        long nt = inOrderDTO.getTotalCount();
+        long ot = inOrderDO.getTotalCount();
+        long oc = inOrderDO.getCurrentCount();
+        long tc = nt *10;
+        inOrderDTO.setTotalCount(tc);
         if(inOrderDTO.getId()<=0){
             inOrderDTO.setCreatedAt(DateUtils.getCurrentSeconds());
             inOrderDTO.setUpdatedAt(DateUtils.getCurrentSeconds());
+            inOrderDTO.setCurrentCount(tc);
+            inOrderDTO.setSellCount(0);
         }else{
+            if(tc>ot)inOrderDTO.setCurrentCount(oc+tc-ot);
+            else if(tc<ot && (ot-tc)>oc)throw new BadRequestException("msg","保存失败，总量缩减大于当前库中剩余量。");
+            else if(tc<ot)inOrderDTO.setCurrentCount(oc-(ot-tc));
             inOrderDTO.setUpdatedAt(DateUtils.getCurrentSeconds());
         }
 
         transferToDO(inOrderDTO, inOrderDO);
-        long tc = inOrderDO.getTotalCount()*10;
-        inOrderDO.setTotalCount(tc);
-        inOrderDO.setCurrentCount(tc);
-        inOrderDO.setSellCount(0);
+
         InOrderDO inOrderDO1 = inOrderRepository.save(inOrderDO);
+
+        inOrderStandardRepository.updateStatusByOrderId(Arrays.asList(inOrderDO1.getId()), Status.DELETE.getValue());
 
         List<InOrderStandardDTO> ios = inOrderDTO.getIos();
         List<InOrderStandardDO> isa = new ArrayList<>();
@@ -103,6 +113,7 @@ public class InOrderService implements IInOrderService{
         for(InOrderStandardDO sdo : ats){
             ios.add(transferToDTO(sdo));
         }
+        inOrderDTO.setIos(ios);
         return inOrderDTO;
     }
 
@@ -119,9 +130,9 @@ public class InOrderService implements IInOrderService{
         final Map<Long, List<InOrderStandardDO>> collect =
                 ss.stream().collect(Collectors.groupingBy(InOrderStandardDO::getInOrderId));
         //转交换类
-        List<InOrderDTO> orderDTOS = content.stream().map(x -> transferToDTO(x)).collect(Collectors.toList());
+        List<InOrderDTO> orderDTOS = content.stream().map(x->getInOrderDTO(x, collect.get(x.getId()))).collect(Collectors.toList());
         //填充
-        orderDTOS.forEach(x->x.setIos(transferToDTOs(collect.get(x.getId()))));
+//        orderDTOS.forEach(x->x.setIos(transferToDTOs(collect.get(x.getId()))));
 
         return new PageImpl<>(orderDTOS, pageable, all.getTotalElements());
     }
@@ -175,9 +186,14 @@ public class InOrderService implements IInOrderService{
         };
 
     }
+
     private static InOrderDO transferToDO(InOrderDTO dto, InOrderDO dO){
         if(dto==null || dO==null) return new InOrderDO();
-        BeanCopy.copyProperties(dto, dO);
+//        BeanCopy.copyProperties(dto, dO);
+        if(dto.getCurrentCount()>0)dO.setCurrentCount(dto.getCurrentCount());
+        if(dto.getTotalCount()>0)dO.setTotalCount(dto.getTotalCount());
+        if(dto.getStoneDate()>0)dO.setStoneDate(new Timestamp(dto.getStoneDate()*1000));
+        if(dto.getUpdatedAt()>0)dO.setUpdatedAt(new Timestamp(dto.getUpdatedAt()*1000));
         dO.setStatus(Objects.isNull(dto.getStatus())? Status.NORMAL.getValue() : dto.getStatus().getValue());
         return dO;
     }

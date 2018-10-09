@@ -10,7 +10,7 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface IInOrderService {
-    InOrderDTO saveOrUpdate(InOrderDTO inOrderDTO);
+    InOrderDTO saveOrUpdate(InOrderDTO inOrderDTO) throws Exception;
 
     InOrderDTO findById(long id);
 

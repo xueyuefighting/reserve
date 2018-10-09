@@ -15,4 +15,7 @@ public interface InOrderStandardRepository extends BaseRepository<InOrderStandar
     @Modifying
     @Query("update InOrderStandardDO set  status = ?2 where id in ?1")
     int updateStatus(List<Long> ids, int status);
+    @Modifying
+    @Query("update InOrderStandardDO set  status = ?2 where inOrderId in ?1")
+    int updateStatusByOrderId(List<Long> inIds, int status);
 }

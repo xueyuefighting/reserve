@@ -32,7 +32,7 @@ public class InOrderController {
 
     @PostMapping(value = "")
     @ResponseStatus(value= HttpStatus.CREATED)
-    public String saveOrUpdate(@RequestBody InOrderDTO dto, Model model){
+    public String saveOrUpdate(@RequestBody InOrderDTO dto, Model model) throws Exception {
         dto.setStoneDate(dto.getStoneDate()/1000);
         dto = inOrderService.saveOrUpdate(dto);
         return "user/userNew";
@@ -45,5 +45,13 @@ public class InOrderController {
         model.addAttribute("page", pageable);
 
         return "inOrder/list";
+    }
+
+    @GetMapping(value="/{inId}")
+    @ResponseStatus(value= HttpStatus.OK)
+    public String get(@PathVariable(value = "inId") long inId, Model model){
+        InOrderDTO orderDTO = inOrderService.findById(inId);
+        model.addAttribute("inOrder", orderDTO);
+        return "inOrder/edit";
     }
 }

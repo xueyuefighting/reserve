@@ -12,11 +12,20 @@
 <script src="/js/jquery-3.3.1.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/sys.js"></script>
+<style type="text/css">
+    a{
+        cursor: pointer;
+    }
+</style>
 <script>
+    function toEdit(url) {
+        $(".body-content", window.parent.document).load(url);
+    }
 </script>
+
     <table class="table table-hover">
         <thead>
-        <tr><th>型号</th><th>石材日期</th><th>总量</th><th>剩余</th><th>卖出</th><th>0.6米单价（元）</th><th>1.2米单价（元）</th><th>1.8米单价（元）</th><th>2.4米单价（元）</th></tr>
+        <tr><th>型号</th><th>石材日期</th><th>总量</th><th>剩余</th><th>卖出</th><th>0.6米单价（元）</th><th>1.2米单价（元）</th><th>1.8米单价（元）</th><th>2.4米单价（元）</th><th>操作</th></tr>
         </thead>
         <tbody>
         <tr th:if="${page.hasContent()}" th:each="order:${page.getContent()}">
@@ -26,6 +35,7 @@
             <td th:text="${order.currentCount}"></td>
             <td th:text="${order.sellCount}"></td>
             <td th:if="${order.ios!=null}" th:each="st:${order.ios}" th:text="${st.price}"></td>
+            <td><a  th:onclick="'javascript:toEdit(\'../in/'+${order.id}+'\')'" th:text="修改"></a></td>
             <!--<td th:text="${order.totalCount}"></td>-->
             <!--<td th:text="${order.totalCount}"></td>-->
             <!--<td th:text="${order.totalCount}"></td>-->
@@ -34,10 +44,10 @@
         </tbody>
     </table>
     <div>
-        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page=0\')'">[首页]</a>&nbsp;&nbsp;
-        <a style="cursor: pointer;" th:if="${page.hasPrevious()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()-1}+'\')'">[上页]</a>&nbsp;&nbsp;
-        <a style="cursor: pointer;" th:if="${page.hasNext()}" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.getNumber()+1}+'\')'">[下页]</a>&nbsp;&nbsp;
-        <a style="cursor: pointer;" th:onclick="'javascript:loadBody(\'../user/list?page='+${page.totalPages-1}+'\')'">[末页]</a>
+        <a th:onclick="'javascript:loadBody(\'../in/list?page=0\')'">[首页]</a>&nbsp;&nbsp;
+        <a th:if="${page.hasPrevious()}" th:onclick="'javascript:loadBody(\'../in/list?page='+${page.getNumber()-1}+'\')'">[上页]</a>&nbsp;&nbsp;
+        <a th:if="${page.hasNext()}" th:onclick="'javascript:loadBody(\'../in/list?page='+${page.getNumber()+1}+'\')'">[下页]</a>&nbsp;&nbsp;
+        <a th:onclick="'javascript:loadBody(\'../in/list?page='+${page.totalPages-1}+'\')'">[末页]</a>
         当前第&nbsp;<em th:text="${page.getNumber()+1}"></em>&nbsp;&nbsp;页&nbsp;&nbsp;共&nbsp;<em th:text="${page.totalPages}"></em>页
     </div>
 </body>

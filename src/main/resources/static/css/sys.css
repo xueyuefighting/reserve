@@ -5,3 +5,7 @@
 header{
     margin-left: 50px;
 }
+
+a{
+    cursor: pointer;
+}
