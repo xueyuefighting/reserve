@@ -39,6 +39,7 @@ public class UserController {
 
     @GetMapping(value="/nameAndtel/{name}")
     @ResponseStatus(value= HttpStatus.OK)
+    @ResponseBody
     public List<UserParam> getMap(@PathVariable(value = "userId") String name, Model model){
         List<UserParam> param = userService.findByNameLike(name);
 //        model.addAttribute("users", param);
@@ -55,6 +56,14 @@ public class UserController {
         Page<UserDO> pageable = userService.findByParam(param);
         model.addAttribute("page", pageable);
         return "user/userList";
+    }
+
+    @GetMapping(value = "/allList")
+    @ResponseStatus(value = HttpStatus.OK)
+    @ResponseBody
+    public List<UserDTO> getAllList(){
+        List<UserDTO> all = userService.findAll();
+        return all;
     }
 
     @GetMapping(value="/new")

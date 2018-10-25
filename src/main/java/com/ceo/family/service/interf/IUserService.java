@@ -22,4 +22,6 @@ public interface IUserService {
     List<UserDTO> findByTel(long tel);
 
     Page<UserDO> findByParam(UserParam userParam);
+
+    List<UserDTO> findAll();
 }

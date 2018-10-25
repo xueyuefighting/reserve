@@ -78,6 +78,7 @@
             cache:false,
             success:function(){
                 alert("保存成功");
+                refreshModels();
             },error:function(r,e){
                 $.each(r.responseJSON, function (i, v) {
                     alert(v);

@@ -17,4 +17,5 @@ public interface UserRepository extends BaseRepository<UserDO, Long> {
     List<UserDO> findByNameLikeAndAndStatusOrderByUpdatedAtDesc(String name, int status);
     List<UserDO> findByTelAndStatusOrderByUpdatedAtDesc(long tel, int status);
     List<UserDO> findByIdInAndStatusOrderByUpdatedAtDesc(List<Long> ids, int status);
+    List<UserDO> findByStatusOrderByCreatedAtDesc(int status);
 }

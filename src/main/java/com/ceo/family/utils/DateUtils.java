@@ -2,6 +2,8 @@ package com.ceo.family.utils;
 
 //import com.sun.org.apache.regexp.internal.RE;
 
+import org.springframework.util.CollectionUtils;
+
 import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -10,6 +12,8 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 import java.util.regex.Pattern;
 
 
@@ -404,13 +408,37 @@ public class DateUtils {
 
 
 	public static void main(String[] args) {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
-		List<Long> list = getMondayDateByYear(new Date());
-		for(Long l : list){
-			Date date = new Date();
-			date.setTime(l);
-			System.out.println(sdf.format(date));
-		}
+//		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
+//		List<Long> list = getMondayDateByYear(new Date());
+//		for(Long l : list){
+//			Date date = new Date();
+//			date.setTime(l);
+//			System.out.println(sdf.format(date));
+//		}
+//		BiFunction<Integer, Integer, List> handler = (x, y) -> {
+//			ArrayList<Object> objects = new ArrayList<>();
+//			objects.add(x);
+//			objects.add(y);
+//			return objects;
+//		};
+//
+//		List list = pagePlugin(handler);
+		System.out.println(0/1);
+	}
+
+	public static <R extends List<?>> R pagePlugin(BiFunction<Integer, Integer, R> fuc){
+
+		int o = 5;
+		int u = 5;
+
+		ArrayList all = new ArrayList();
+		R grants;
+
+		do {
+			all.addAll((grants = fuc.apply(o,u)));
+		}while((--o)>0);
+
+		return (R) all;
 	}
 
 	/**

@@ -3,122 +3,71 @@
 <head>
     <title>新建入库单</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" type="text/css" href="bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="bootstrap-responsive.min.css">
-    <link rel="stylesheet" type="text/css" href="jquery-ui.css">
-    <link rel="stylesheet" type="text/css" href="jquery-ui-timepicker-addon.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.css">
 </head>
 <body>
 <script src="jquery-3.3.1.min.js"></script>
-<script src="bootstrap.min.js"></script>
-<script src="constant.js"></script>
-<script src="jquery-ui.js"></script>
-<script src="jquery-ui-timepicker-addon.js"></script>
+<script src="js/bootstrap.js"></script>
+<script type="text/css">
+</script>
 <script>
     $(document).ready(function () {
-        $( "#datepicker" ).datepicker({
-            inline: true,
-            dateFormat: "yy-mm-dd"
-        });
+
+
     });
-
-    function sendForm(){
-        if(!$("#model").val()){
-            alert("请填写型号");
-            $("#model").focus();
-            return false;
-        }
-        if(!$("#count").val()){
-            alert("请填写数量");
-            $("#count").focus();
-            return false;
-        }
-        if(!$("#datepicker").val()){
-            alert("请填写板材日期");
-            $("#datepicker").focus();
-            return false;
-        }
-
-        var os = [];
-        var o = {};
-        var flag = true;
-        $(".stand").find("input.st").each(function (i,v) {
-            var thisName = $(v).attr("name");
-            var stand = $(v).val();
-            var price = $("input[name="+thisName+"_price]").val();
-            if(!price){
-                alert("请输入"+stand+"规格的单价!");
-                flag = false;
-                $("input["+thisName+"_price]").focus();
-                return false;
-            }
-            o["standard"] = stand;
-            o["price"] = price
-            os[i]=o;
-        });
-
-        if(!flag){
-            return;
-        }
-
-        var param = {
-            "model":$("#model").val(),
-            "totalCount":$("#count").val(),
-            "stoneDate":$("#datepicker").val(),
-            "ios":os};
-        $.ajax({
-            contentType:"application/json; charset=utf-8",
-            data: JSON.stringify(param),
-            url:HttpParam.http_prefix+"/in/create",
-            type:"POST",
-            cache:false,
-            success:function(){
-                alert("保存成功");
-            },error:function(){
-                alert("请求出错，请刷新页面尝试");
-            }
-        })
-    }
 </script>
-<table  class="table">
+
+<table border="1" bordercolor="#000000" cellspacing="0" cellpadding="2" style="border-collapse:collapse;">
+    <div>
+        <span>购货单位：</span>
+        <select class="select2 user_tri">
+            <option value="" selected="selected">请选择</option>
+        </select>
+    </div>
+    <div>购货单位：</div>
+    <div style="text-align: left;">
+        <select class="select2 user_tri">
+            <option value="" selected="selected">请选择</option>
+        </select>
+    </div>
+    <div>购货单位：</div>
+    <div style="text-align: left;">
+        <select class="select2 user_tri">
+            <option value="" selected="selected">请选择</option>
+        </select>
+    </div>
     <tr>
-        <td>型号：</td>
-        <td><input type="text" class="form-control" id="model" placeholder="请输入型号"></td>
-    </tr>
-    <tr>
-        <td>数量：</td>
-        <td><input type="number" class="form-control" id="count" placeholder="请输入数量"></td>
-    </tr>
-    <tr>
-        <td>石材日期：</td>
         <td>
-            <!--<input type="number" class="form-control" id="tel" placeholder="请输入电话">-->
-            <input style="cursor: pointer;" type="text" placeholder="点击选择日期" id="datepicker">
-        </td>
-    </tr>
-    <tr>
-        <td>定价：</td>
-        <td>
-            <table class="stand">
-                <tr>
-                    <td>规格（米）</td>
-                    <td>单价（元）</td>
+            <table class="stand outDetail_table_css total_price_change">
+                <tr class="title_tr">
+                    <td>型号</td>
+                    <td>规格</td>
+                    <td>单价</td>
+                    <td>数量</td>
+                    <td>金额</td>
+                </tr>
+                <tr class="detail_val price_html">
+                    <td>
+                        <select class="select2 models_tri">
+                            <option value="" selected="selected">请选择</option>
+                        </select>
+                    </td>
+                    <td>
+                        <select class="select2 standard_tri">
+                            <option value="" selected="selected">请选择</option>
+                        </select>
+                    </td>
+                    <td><input type="number" readonly="true" name="price" value="0"/></td>
+                    <td><input type="number" name="price_num" value="0"/></td>
+                    <td style="    white-space: nowrap;">
+                        <input type="number" readonly="true" name="model_price" value="0"/>
+                        <input type="button" value="+" style="font-size: 21px;margin-top: -11px;margin-left: 20px;"/>
+                    </td>
                 </tr>
                 <tr>
-                    <td><input class="st" name="s6" readonly="true" value="0.6"/></td>
-                    <td><input name="s6_price" type="number" value=""/></td>
-                </tr>
-                <tr>
-                    <td><input class="st" name="s12" readonly="true" value="1.2"/></td>
-                    <td><input name="s12_price" type="number" value=""/></td>
-                </tr>
-                <tr>
-                    <td><input class="st" name="s18" readonly="true" value="1.8"/></td>
-                    <td><input name="s18_price" type="number" value=""/></td>
-                </tr>
-                <tr>
-                    <td><input class="st" name="s24" readonly="true" value="2.4"/></td>
-                    <td><input name="s24_price" type="number" value=""/></td>
+                    <td rowspan="3">客户：<span class=""></span></td>
+                    <td>沈阳：<span class="selfPhone_html"></span></td>
+                    <td style="white-space: nowrap;text-align: right;">合计（单位/元）：<input id="total_price" name="total_price" type="number" value=""/>.00</td>
                 </tr>
             </table>
         </td>
@@ -130,6 +79,8 @@
             </div>
         </td>
     </tr>
+
+
 </table>
 </body>
 </html>

@@ -77,8 +77,11 @@
             cache:false,
             success:function(){
                 alert("保存成功");
-            },error:function(){
-                alert("请求出错，请刷新页面尝试");
+                refreshModels();
+            },error:function(r,e){
+                $.each(r.responseJSON, function (i, v) {
+                    alert(v);
+                });
             }
         })
     }

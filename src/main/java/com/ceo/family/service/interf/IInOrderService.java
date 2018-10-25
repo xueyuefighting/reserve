@@ -18,4 +18,5 @@ public interface IInOrderService {
 
     long updateModel(long id, List<TradeConstant> currentCount);
 
+    List<InOrderDTO> findAll();
 }

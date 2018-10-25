@@ -1,28 +1,19 @@
 package com.ceo.family.controller;
 
-import com.ceo.family.dao.dos.InOrderDO;
 import com.ceo.family.dao.dtos.InOrderDTO;
 import com.ceo.family.dao.dtos.InOrderParam;
-import com.ceo.family.dao.dtos.InOrderStandardDTO;
-import com.ceo.family.service.InOrderService;
 import com.ceo.family.service.interf.IInOrderService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Objects;
 
 @Controller
 @CrossOrigin
-@RequestMapping(value = "/in")
-public class InOrderController {
+@RequestMapping(value = "/out")
+public class OutOrderController {
 
     @Autowired
     private IInOrderService inOrderService;
@@ -30,7 +21,7 @@ public class InOrderController {
     @GetMapping(value="/new")
     @ResponseStatus(value= HttpStatus.OK)
     public String create(){
-        return "inOrder/new";
+        return "outOrder/new";
     }
 
     @PostMapping(value = "")
@@ -48,21 +39,6 @@ public class InOrderController {
         model.addAttribute("page", pageable);
 
         return "inOrder/list";
-    }
-
-    @GetMapping(value="/allList")
-    @ResponseStatus(value= HttpStatus.OK)
-    @ResponseBody
-    public String getAllList(@ModelAttribute InOrderParam param, Model model){
-        List<InOrderDTO> all = inOrderService.findAll();
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.writeValueAsString(all);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return "";
-        }
-
     }
 
     @GetMapping(value="/{inId}")

@@ -49,6 +49,7 @@ public class InOrderService implements IInOrderService{
     @Transactional
     public InOrderDTO saveOrUpdate(InOrderDTO inOrderDTO) throws BadRequestException {
         if(Objects.isNull(inOrderDTO)){throw new BadRequestException(ContentConstant.PARAM_IS_NULL);}
+
         InOrderDO inOrderDO = inOrderRepository.findById(inOrderDTO.getId()).orElse(new InOrderDO());
         long nt = inOrderDTO.getTotalCount();
         long ot = inOrderDO.getTotalCount();
@@ -61,6 +62,9 @@ public class InOrderService implements IInOrderService{
             inOrderDTO.setCurrentCount(tc);
             inOrderDTO.setSellCount(0);
         }else{
+            List<InOrderDO> checkOrder =
+                    inOrderRepository.findByModelLikeAndStatusOrderByUpdatedAtDesc(inOrderDTO.getModel(), Status.NORMAL.getValue());
+            if(!CollectionUtils.isEmpty(checkOrder))throw new BadRequestException("msg","保存失败，型号重复，请更换型号后重试。");
             if(tc>ot)inOrderDTO.setCurrentCount(oc+tc-ot);
             else if(tc<ot && (ot-tc)>oc)throw new BadRequestException("msg","保存失败，总量缩减大于当前库中剩余量。");
             else if(tc<ot)inOrderDTO.setCurrentCount(oc-(ot-tc));
@@ -156,6 +160,21 @@ public class InOrderService implements IInOrderService{
         return 1;
     }
 
+    @Override
+    public List<InOrderDTO> findAll() {
+        List<InOrderDO> content = inOrderRepository.findAll(new Sort(Sort.Direction.ASC, "id"));
+        List<Long> ids = content.stream().map(InOrderDO::getId).collect(Collectors.toList());
+
+        List<InOrderStandardDO> ss =
+                inOrderStandardRepository.findByInOrderIdInAndStatusOrderByUpdatedAtAsc(ids, Status.NORMAL.getValue());
+
+        final Map<Long, List<InOrderStandardDO>> collect =
+                ss.stream().collect(Collectors.groupingBy(InOrderStandardDO::getInOrderId));
+        //转交换类
+        List<InOrderDTO> orderDTOS = content.stream().map(x->getInOrderDTO(x, collect.get(x.getId()))).collect(Collectors.toList());
+        return orderDTOS;
+    }
+
 
     private Specification<InOrderDO> listWhere(final InOrderParam inOrderParam){
         return new Specification<InOrderDO>() {
@@ -194,6 +213,8 @@ public class InOrderService implements IInOrderService{
         if(dto.getTotalCount()>0)dO.setTotalCount(dto.getTotalCount());
         if(dto.getStoneDate()>0)dO.setStoneDate(new Timestamp(dto.getStoneDate()*1000));
         if(dto.getUpdatedAt()>0)dO.setUpdatedAt(new Timestamp(dto.getUpdatedAt()*1000));
+        if(dto.getCreatedAt()>0)dO.setCreatedAt(new Timestamp(dto.getCreatedAt()*1000));
+        dO.setModel(dto.getModel());
         dO.setStatus(Objects.isNull(dto.getStatus())? Status.NORMAL.getValue() : dto.getStatus().getValue());
         return dO;
     }

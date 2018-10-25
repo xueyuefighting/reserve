@@ -1,69 +1,142 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>新建出货单</title>
+    <title>新建入库单</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-responsive.min.css">
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css">
+    <link rel="stylesheet" type="text/css" href="/css/jquery-ui-timepicker-addon.css">
+    <link rel="stylesheet" type="text/css" href="/css/out/out.css">
+    <link rel="stylesheet" type="text/css" href="/css/select2.min.css">
 </head>
 <body>
 <script src="/js/jquery-3.3.1.min.js"></script>
 <script src="/js/bootstrap.min.js"></script>
 <script src="/js/constant.js"></script>
 <script src="/js/jquery-ui.js"></script>
-<script>
+<script src="/js/jquery-ui-timepicker-addon.js"></script>
+<script src="/js/out/out.js"></script>
+<script src="/js/select2.min.js"></script>
+<style type="text/css">
+    input {
+        text-align: right;
+    }
+    .out_info_css{
+        margin-top: 16px;
+        margin-left: 19px;
+    }
+    .out_span_css{
+        display: inline-block;
+        width: 77px;
+        margin-left: 0px;
+    }
+    .out_text_align{
+        text-align: left;
+    }
 
+    .margin_top_12{
+        margin-top: 12px;
+    }
+</style>
+<script>
     $(document).ready(function () {
 
+        userTri();
+
+        //计算金额和总价
+        priceNumChange();
+
+        intPriceTr();
+
     });
 
-    $( "#datepicker" ).datepicker({
-        inline: true
-    });
+    function add_tr($obj){
+        var titleTr = $(".title_tr");
 
-    function sendForm(){
-        var param = {
-            "name":$("#name").val(),
-            "tel":$("#tel").val()};
-        $.ajax({
-            contentType:"application/json; charset=utf-8",
-            data: JSON.stringify(param),
-            url:HttpParam.http_prefix+"/in/new",
-            type:"POST",
-            cache:false,
-            success:function(){
-                alert("保存成功");
-            },error:function(){
-                alert("请求出错，请刷新页面尝试");
-            }
-        })
+        var trHtmlObj = obtainsPriceHtmlObj();
+
+    }
+
+    function intPriceTr(){
+        aquireTr(equireFirst());
+    }
+
+    function equireFirst(){
+        var $first =  $("tr.title_tr");
+        return $first;
     }
 </script>
-<table  class="table">
-    <tr>
-        <td>型号：</td>
-        <td><input type="text" class="form-control" id="name" placeholder="请输入型号"></td>
-    </tr>
-    <tr>
-        <td>数量：</td>
-        <td><input type="number" class="form-control" id="tel" placeholder="请输入电话"></td>
-    </tr>
-    <tr>
-        <td>石材日期：</td>
-        <td>
-            <!--<input type="number" class="form-control" id="tel" placeholder="请输入电话">-->
-            <div id="datepicker"></div>
-        </td>
-    </tr>
-    <tr>
-        <td>
-            <div class="controls">
-                <button type="button" class="btn" onclick="sendForm();">保存</button>
-            </div>
-        </td>
-    </tr>
 
-</table>
+    <div style="padding-top: 84px;">
+        <span style="font-family: serif;font-size: 38px;margin-left: 500px;">出&nbsp;货&nbsp;单&nbsp;据</span>
+        <hr style="height: 2px;border: none;border-top: 2px dotted #a1b2c5;"/>
+        <span class="out_info_css margin_top_12">
+            <span class="out_span_css" style="margin-top: 18px;">购货单位：</span>
+            <span>
+                <select name="userId" class="select2 user_tri form_val">
+                    <option value="" selected="selected">请选择</option>
+                </select>
+            </span>
+        </span>
+        <span class="out_info_css">
+            <span>货单流水号：</span>
+            <span>
+                <input name="serailNo" type="number" class="form-control out_text_align margin_top_12 form_val" readonly="true" placeholder="保存之后会自动获取">
+            </span>
+        </span>
+        <span class="out_info_css">
+            <span>购货日期：</span>
+            <!--<input type="number" class="form-control" id="tel" placeholder="请输入电话">-->
+            <span>
+                <input name="date" class="datepicker out_text_align margin_top_12 form_val" style="cursor: pointer;" type="text" placeholder="点击选择日期" id="datepicker">
+            </span>
+        </span>
+    </div>
+    <table  class="table">
+        <tr>
+            <td style="border: none;">
+                <table class="stand outDetail_table_css total_price_change">
+                    <tr class="title_tr">
+                        <td>型号</td>
+                        <td>规格</td>
+                        <td>单价</td>
+                        <td>数量</td>
+                        <td>金额</td>
+                    </tr>
+                    <!--<tr class="detail_val price_html">-->
+                        <!--<td>-->
+                            <!--<select name="model" class="select2 models_tri form_val">-->
+                                <!--<option value="" selected="selected">请选择</option>-->
+                            <!--</select>-->
+                        <!--</td>-->
+                        <!--<td>-->
+                            <!--<select name="standard" class="select2 standard_tri form_val">-->
+                                <!--<option value="" selected="selected">请选择</option>-->
+                            <!--</select>-->
+                        <!--</td>-->
+                        <!--<td><input class="form_val" type="number" readonly="true" name="price" value="0"/></td>-->
+                        <!--<td><input class="form_val" type="number" name="price_num" value="0"/></td>-->
+                        <!--<td style="    white-space: nowrap;">-->
+                            <!--<input type="number" readonly="true" name="model_price" value="0"/>-->
+                            <!--&lt;!&ndash;<input class="btn_clik_add" type="button" title="点击添加一条" value="添加" style="font-size: 1px;margin-top: -11px;margin-left: 20px;"/>&ndash;&gt;-->
+                        <!--</td>-->
+                    <!--</tr>-->
+                    <tr>
+                        <td rowspan="3">客户：<span id="userTel" class=""></span></td>
+                        <td>沈阳：<span class="selfPhone_html"></span></td>
+                        <td colspan="3" style="white-space: nowrap;text-align: right;padding-right: 83px;">合计（单位/元）：<input id="total_price" class="form_val" name="total_price" type="number" value=""/>.00</td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="controls">
+                    <button type="button" class="btn save_btn_clk" onclick="save();">保存</button>
+                </div>
+            </td>
+        </tr>
+    </table>
 </body>
 </html>

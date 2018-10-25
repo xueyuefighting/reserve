@@ -9,6 +9,7 @@ import com.ceo.family.dao.repository.UserRepository;
 import com.ceo.family.service.interf.IUserService;
 import com.ceo.family.utils.BeanCopy;
 import com.ceo.family.utils.DateUtils;
+import com.google.common.math.Stats;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -96,6 +97,13 @@ public class UserService implements IUserService {
 //                .map(x -> transferToDTO(x))
 //                .collect(Collectors.toList());
         return content;
+    }
+
+    @Override
+    public List<UserDTO> findAll() {
+        List<UserDO> dos = userRepository.findByStatusOrderByCreatedAtDesc(Status.NORMAL.getValue());
+        List<UserDTO> userDTOS = dos.stream().map(UserService::transferToDTO).collect(Collectors.toList());
+        return userDTOS;
     }
 
     private static UserDO transferToDO(UserDTO dto, UserDO dO){
